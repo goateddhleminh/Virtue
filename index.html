@@ -2227,6 +2227,542 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+
+/* ================================================================
+   CRITICAL CONTRAST & TYPOGRAPHY FIX (High-contrast bold black text)
+   ================================================================ */
+
+/* Global Default Text for All Views, Cards, and Containers */
+.view,
+.card,
+.planner-card,
+.stat-card,
+.journal-entry,
+.todo-item,
+.week-day,
+.res-card,
+.subject-card,
+.shop-card,
+.break-card,
+.ach-card {
+  color: #1E1F1F;
+}
+
+/* Headings and Titles on cards */
+h1, h2, h3, h4, h5, h6,
+.card-title,
+.page-title,
+.planner-head h3,
+.section-title,
+.modal-title,
+.dialog-title,
+.warn-title,
+.banner-title,
+.pet-mood {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.ph-sub,
+.card-sub,
+.stat-sub,
+.section-sub,
+.pet-desc,
+.session-time,
+.student-id-text,
+.todo-notes,
+.todo-sub,
+.todo-date,
+.test-item-desc,
+.test-item-notes,
+.setting-desc,
+.field-desc,
+.ach-desc,
+.shop-desc {
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+/* 1. PLANNER & WEEKLY SCHEDULE (Fixing invisible day names & headers) */
+.wd-name {
+  color: #1E1F1F !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.week-day-head {
+  color: #1E1F1F !important;
+}
+
+.wd-count {
+  color: #6B7280 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+.wd-task-title {
+  color: #1E1F1F !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+}
+
+.wd-task.st-done .wd-task-title {
+  color: #9CA3AF !important;
+  font-weight: 500 !important;
+}
+
+.wd-bonus {
+  color: #1E1F1F !important;
+  background: #F2F1F3 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+}
+
+.wd-empty {
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+.wd-note,
+.wd-add input {
+  color: #1E1F1F !important;
+  background: #F3F3F5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  font-weight: 600 !important;
+}
+
+.wd-note::placeholder,
+.wd-add input::placeholder {
+  color: #9CA3AF !important;
+}
+
+.pp-num {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  font-size: 22px !important;
+}
+
+.pp-lbl {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.06em !important;
+}
+
+/* Day card container in schedule */
+.week-day {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+
+.week-day.today {
+  border: 2px solid #1E1F1F !important;
+  box-shadow: 0 4px 14px rgba(30, 31, 31, 0.12) !important;
+}
+
+/* Planner Ribbon (To-Do List vs Weekly Schedule) */
+.planner-ribbon-label {
+  color: #6B7280 !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+}
+
+.ribbon-item {
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+}
+
+.ribbon-item:hover {
+  background: #ECEBEF !important;
+  color: #1E1F1F !important;
+}
+
+.ribbon-item.active {
+  background: #1E1F1F !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(30, 31, 31, 0.22) !important;
+}
+
+.ribbon-item.active .ribbon-txt,
+.ribbon-item.active .ribbon-ico {
+  color: #FFFFFF !important;
+}
+
+.ribbon-item.active .ribbon-badge {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+
+.ribbon-badge {
+  background: #E5E7EB !important;
+  color: #1E1F1F !important;
+  font-weight: 700 !important;
+}
+
+/* Subtabs in Journal, Minigames, Extra */
+.subtab-btn,
+.subtabs button {
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+}
+
+.subtab-btn:hover,
+.subtabs button:hover {
+  color: #1E1F1F !important;
+  background: #ECEBEF !important;
+}
+
+.subtab-btn.active,
+.subtabs button.active {
+  background: #1E1F1F !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(30, 31, 31, 0.22) !important;
+}
+
+/* Planner Chips */
+.planner-chip {
+  color: #1E1F1F !important;
+  font-weight: 700 !important;
+  background: #F3F3F5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.planner-chip.active {
+  background: #1E1F1F !important;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+.planner-chip.danger {
+  color: #DC2626 !important;
+  background: #FEE2E2 !important;
+  border-color: rgba(220, 38, 38, 0.2) !important;
+}
+
+/* To-Do Items & Planner Items */
+.todo-item,
+.planner-item {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1E1F1F !important;
+}
+
+.todo-title,
+.planner-item-title,
+.planner-item-text {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+}
+
+.todo-item.st-done .todo-title,
+.planner-item.st-done .planner-item-title {
+  color: #9CA3AF !important;
+  font-weight: 500 !important;
+}
+
+/* 2. FOCUS TIMER (Courses) HIGH-CONTRAST TEXT */
+.timer-display {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.timer-mode-label {
+  color: #4B5563 !important;
+  font-weight: 700 !important;
+}
+
+.timer-cycle {
+  color: #6B7280 !important;
+  font-weight: 600 !important;
+}
+
+.goal-time-box input {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  background: #F3F3F5 !important;
+}
+
+.goal-time-box span {
+  color: #6B7280 !important;
+  font-weight: 700 !important;
+}
+
+.goal-num {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.tip-rate-num,
+.tip-rate-text,
+.tip-rate-label {
+  color: #1E1F1F !important;
+  font-weight: 700 !important;
+}
+
+/* 3. RESOURCES (Students) HIGH-CONTRAST TEXT */
+#subjectSelect,
+#subjectSelect option {
+  color: #1E1F1F !important;
+  background: #FFFFFF !important;
+  font-weight: 700 !important;
+}
+
+.res-subject-name,
+.res-subject-item,
+.res-card-head,
+.subject-manage-item .subj-name,
+.res-item-title,
+.res-doc-name,
+.res-link-title,
+.folder-name,
+.res-folder-title {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+}
+
+.res-url {
+  color: #6B7280 !important;
+  font-weight: 500 !important;
+}
+
+/* 4. JOURNAL HIGH-CONTRAST TEXT */
+.journal-stat .val {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  font-size: 28px !important;
+}
+
+.journal-stat .lbl {
+  color: #4B5563 !important;
+  font-weight: 700 !important;
+}
+
+.test-subject-name,
+.test-item-title,
+.test-title,
+.note-title,
+.journal-subject-name {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  font-size: 16px !important;
+}
+
+.test-item b {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.test-score {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.test-sub-highest-badge {
+  background: #F3F3F5 !important;
+  color: #1E1F1F !important;
+  font-weight: 700 !important;
+}
+
+/* 5. MINIGAMES HIGH-CONTRAST TEXT */
+.gamble-bal {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  background: #F3F3F5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.dice-sum-value {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.bet-zone-name {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.payout-row .val {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.payout-row .lbl {
+  color: #6B7280 !important;
+  font-weight: 600 !important;
+}
+
+.gamble-amount-box input {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+  background: #F3F3F5 !important;
+}
+
+/* 6. EXTRA (Shop, Breaks, Achievements) HIGH-CONTRAST TEXT */
+.shop-section-title,
+.shop-name,
+.shop-item-name {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.shop-price {
+  color: #1E1F1F !important;
+  font-weight: 700 !important;
+}
+
+.breaks-jar-num {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.breaks-hero-title {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.break-stat .val {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.break-source .src-name {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.break-source .src-amt {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.ach-title {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+
+.subject-row-head,
+.subject-row-head span,
+#lifeReaderTitle,
+#subjectNoteReaderTitle {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+/* 7. STATS (Analytics) HIGH-CONTRAST TEXT */
+.stat-label {
+  color: #6B7280 !important;
+  font-weight: 700 !important;
+}
+
+.big-num,
+.stat-box .num,
+.stat-box .val,
+.stat-subject-name,
+.subj-legend-item span,
+.stat-legend span {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.heat-val.empty {
+  color: rgba(30, 31, 31, 0.40) !important;
+}
+
+/* 8. PROFILE HIGH-CONTRAST TEXT */
+.profile-name,
+.profile-stat-box .val,
+.profile-stat .val,
+.profile-stats-grid .val,
+#profileLv,
+#profileStreak,
+#profileHours,
+#profileSessions,
+#profileAch,
+#accountEmail,
+.profile-val {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+.profile-stat-box .lbl,
+.profile-stat .lbl {
+  color: #6B7280 !important;
+  font-weight: 700 !important;
+}
+
+.profile-title {
+  color: #4B5563 !important;
+  font-weight: 600 !important;
+}
+
+.profile-quote {
+  color: #1E1F1F !important;
+  font-style: italic !important;
+  font-weight: 600 !important;
+}
+
+.field label,
+.setting-label {
+  color: #1E1F1F !important;
+  font-weight: 800 !important;
+}
+
+/* 9. GENERAL FORM CONTROLS & INPUTS */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  color: #1E1F1F !important;
+  background: #F3F3F5 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  font-weight: 600 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9CA3AF !important;
+  font-weight: 500 !important;
+}
+
+/* Preserving Inverted Dark Card (Total Revenue card in KPI row) */
+.kpi-card-charcoal,
+.kpi-card-charcoal * {
+  color: #FFFFFF !important;
+}
+.kpi-card-charcoal .kpi-label-skillset {
+  color: #A1A1AA !important;
+}
+.kpi-card-charcoal .trend-badge-skillset {
+  color: #10B981 !important;
+}
+
+/* Preserving Upgrade Card */
+.upgrade-card,
+.upgrade-card * {
+  color: #FFFFFF !important;
+}
+.upgrade-card .upgrade-sub {
+  color: #A1A1AA !important;
+}
+.upgrade-card .upgrade-btn {
+  background: #7F7E82 !important;
+  color: #FFFFFF !important;
+}
+
 </style>
 </head>
 <body>
@@ -3084,7 +3620,7 @@ input:focus, select:focus, textarea:focus {
       </div>
       <div id="extra-section-shop">
         <div class="shop-header">
-        <div><span style="font-size:14px;font-weight:700;color:#fff">Reward Shop Catalog</span><span style="font-size:12px;color:var(--text-3);margin-left:8px">Companions, power-ups, themes &amp; cosmetics</span></div>
+        <div><span style="font-size:14px;font-weight:800;color:#1E1F1F">Reward Shop Catalog</span><span style="font-size:12px;color:var(--text-3);margin-left:8px">Companions, power-ups, themes &amp; cosmetics</span></div>
         <div class="shop-balance"><span class="ico">🪙</span><span id="shopCoins">0</span><small>coins</small></div>
       </div>
       <div class="shop-section-title">Companions</div>
@@ -3201,7 +3737,7 @@ input:focus, select:focus, textarea:focus {
             <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
               <div class="user-chip-avatar" style="width:44px;height:44px;font-size:16px" id="accountAvatar">◉</div>
               <div style="flex:1;min-width:180px">
-                <div style="font-size:14px;font-weight:600;color:#fff" id="accountEmail">user@example.com</div>
+                <div style="font-size:14px;font-weight:700;color:#1E1F1F" id="accountEmail">user@example.com</div>
                 <div style="font-size:11.5px;color:var(--text-3);margin-top:2px" id="accountStatus">Synced to cloud</div>
               </div>
             </div>
@@ -3419,7 +3955,7 @@ input:focus, select:focus, textarea:focus {
 <div class="modal-backdrop" id="sessionSummaryBackdrop">
   <div class="modal reward-modal" id="sessionSummaryModal" style="max-width:420px">
     <div class="reward-pop-icon" style="margin-bottom:18px">✦</div>
-    <div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:6px">Session Complete</div>
+    <div style="font-size:22px;font-weight:800;color:#1E1F1F;margin-bottom:6px">Session Complete</div>
     <div style="font-size:12.5px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;font-weight:600" id="sessionSummarySubject">General</div>
     <div class="session-summary-time" id="sessionSummaryTime">0m</div>
     <div class="session-summary-grid">
@@ -3569,7 +4105,7 @@ input:focus, select:focus, textarea:focus {
       <span class="life-note-badge" id="lifeReaderFolder">General</span>
       <span style="font-size:12px;color:var(--text-3)" id="lifeReaderDate">Today</span>
     </div>
-    <h3 id="lifeReaderTitle" style="font-size:20px;font-weight:700;margin-bottom:12px;color:#fff">Entry Title</h3>
+    <h3 id="lifeReaderTitle" style="font-size:20px;font-weight:800;margin-bottom:12px;color:#1E1F1F">Entry Title</h3>
     <div id="lifeReaderLinkWrap" style="margin-bottom:14px;display:none">
       <a id="lifeReaderLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn primary" style="font-size:12.5px;padding:8px 14px;display:inline-flex;align-items:center;gap:6px">↗ Open in Notion / External Link</a>
     </div>
@@ -3628,7 +4164,7 @@ input:focus, select:focus, textarea:focus {
       </div>
       <span style="font-size:12px;color:var(--text-3)" id="subjectNoteReaderDate">Today</span>
     </div>
-    <h3 id="subjectNoteReaderTitle" style="font-size:22px;font-weight:700;margin-bottom:12px;color:#fff;line-height:1.3">Note Title</h3>
+    <h3 id="subjectNoteReaderTitle" style="font-size:22px;font-weight:800;margin-bottom:12px;color:#1E1F1F;line-height:1.3">Note Title</h3>
     <div id="subjectNoteReaderLinkWrap" style="margin-bottom:14px;display:none">
       <a id="subjectNoteReaderLinkBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn primary" style="font-size:12.5px;padding:8px 14px;display:inline-flex;align-items:center;gap:6px">↗ Open Reference Link</a>
     </div>
