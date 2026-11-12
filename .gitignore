@@ -1,0 +1,5 @@
+# Backups & Local artifacts
+*.backup*
+*.pre_*
+*.tmp
+*.png
