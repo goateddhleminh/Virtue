@@ -3398,6 +3398,18 @@ textarea::placeholder {
   background: #ECEBEF !important;
 }
 
+#authGate .auth-error {
+  background: #FEF2F2 !important;
+  border: 1px solid #FCA5A5 !important;
+  color: #B91C1C !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  padding: 10px 14px !important;
+  border-radius: 12px !important;
+  margin-bottom: 14px !important;
+  line-height: 1.45 !important;
+}
+
 #authGate .auth-note {
   color: #4B5563 !important;
   font-weight: 500 !important;
@@ -5358,27 +5370,144 @@ function onSignedOut(){
   showAuthGate();
   toast('👋','Signed out','Your data stays safe in your account');
 }
+/* =========================================================
+   SECURITY: RATE LIMITING & BRUTE FORCE PROTECTION
+   ========================================================= */
+const AUTH_RATE_LIMIT_KEY = 'virtue_auth_rate_limit_v1';
+
+function getAuthRateLimitState(){
+  try {
+    const raw = localStorage.getItem(AUTH_RATE_LIMIT_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { failedAttempts: 0, lockoutUntil: 0, signupTimestamps: [] };
+}
+
+function saveAuthRateLimitState(data){
+  try {
+    localStorage.setItem(AUTH_RATE_LIMIT_KEY, JSON.stringify(data));
+  }catch(e){}
+}
+
+function checkSignInRateLimit(){
+  const state = getAuthRateLimitState();
+  const now = Date.now();
+  if(state.lockoutUntil && state.lockoutUntil > now){
+    const waitSec = Math.ceil((state.lockoutUntil - now) / 1000);
+    return { blocked: true, message: `⚠️ Security Cooldown: Too many failed login attempts. Please wait ${waitSec}s before retrying.` };
+  }
+  return { blocked: false };
+}
+
+function recordSignInFailure(){
+  const state = getAuthRateLimitState();
+  state.failedAttempts = (state.failedAttempts || 0) + 1;
+  const now = Date.now();
+  if(state.failedAttempts >= 5){
+    state.lockoutUntil = now + 60000; // 60s lockout
+    saveAuthRateLimitState(state);
+    return `🔒 5 failed attempts reached. Sign in locked for 60 seconds to protect your account.`;
+  } else if(state.failedAttempts >= 3){
+    state.lockoutUntil = now + 15000; // 15s cooldown
+    saveAuthRateLimitState(state);
+    return `⚠️ Multiple failed attempts (${state.failedAttempts}/5). Please wait 15 seconds before trying again.`;
+  }
+  saveAuthRateLimitState(state);
+  return null;
+}
+
+function resetSignInRateLimit(){
+  const state = getAuthRateLimitState();
+  state.failedAttempts = 0;
+  state.lockoutUntil = 0;
+  saveAuthRateLimitState(state);
+}
+
+function checkSignUpRateLimit(){
+  const state = getAuthRateLimitState();
+  const now = Date.now();
+  // Keep only attempts within the past 1 hour (3600000 ms)
+  state.signupTimestamps = (state.signupTimestamps || []).filter(ts => now - ts < 3600000);
+  
+  // Rule 1: Minimum 15 seconds cooldown between sign-up requests
+  const lastSignup = state.signupTimestamps[state.signupTimestamps.length - 1] || 0;
+  if(now - lastSignup < 15000){
+    const waitSec = Math.ceil((15000 - (now - lastSignup)) / 1000);
+    saveAuthRateLimitState(state);
+    return { blocked: true, message: `⚠️ Rate Limit: Please wait ${waitSec}s before creating another account.` };
+  }
+  
+  // Rule 2: Max 4 sign-up attempts per hour per browser
+  if(state.signupTimestamps.length >= 4){
+    const oldest = state.signupTimestamps[0];
+    const waitMins = Math.ceil((3600000 - (now - oldest)) / 60000);
+    saveAuthRateLimitState(state);
+    return { blocked: true, message: `🔒 Sign-up limit exceeded (max 4 accounts/hour). Please retry in ${waitMins} minute(s).` };
+  }
+  
+  saveAuthRateLimitState(state);
+  return { blocked: false };
+}
+
+function recordSignUpAttempt(){
+  const state = getAuthRateLimitState();
+  state.signupTimestamps = (state.signupTimestamps || []).filter(ts => Date.now() - ts < 3600000);
+  state.signupTimestamps.push(Date.now());
+  saveAuthRateLimitState(state);
+}
+
 async function handleSignUp(e){
   e.preventDefault();
   showAuthError('');
   if(!isSupaConfigured()){ showAuthError('Connecting… please wait.'); return; }
+  
+  // Client-side Rate Limit check
+  const rateCheck = checkSignUpRateLimit();
+  if(rateCheck.blocked){
+    showAuthError(rateCheck.message);
+    return;
+  }
+  
   const name = document.getElementById('signupName').value.trim();
   const email = document.getElementById('signupEmail').value.trim();
   const password = document.getElementById('signupPassword').value;
+  
+  if(password.length < 6){
+    showAuthError('Password must be at least 6 characters long.');
+    return;
+  }
+  
   const btn = document.getElementById('signupBtn');
   btn.disabled = true; btn.textContent = 'Creating…';
   try{
+    recordSignUpAttempt();
     const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
     if(error) throw error;
     if(!data.session) showAuthError('Check your inbox to confirm your email, then sign in.');
     document.getElementById('signupForm').reset();
-  }catch(err){ showAuthError(err.message || 'Sign up failed'); }
+  }catch(err){
+    let msg = err.message || 'Sign up failed';
+    const lower = msg.toLowerCase();
+    if(lower.includes('rate limit') || lower.includes('too many') || lower.includes('over_email_send_rate_limit')){
+      msg = '🔒 Registration Rate Limit: Too many signup requests. Please wait a few minutes before trying again.';
+    }
+    showAuthError(msg);
+  }
   finally{ btn.disabled = false; btn.textContent = 'Create Account'; }
 }
+
 async function handleSignIn(e){
   e.preventDefault();
   showAuthError('');
   if(!isSupaConfigured()){ showAuthError('Connecting… please wait.'); return; }
+  
+  // Client-side Rate Limit / Lockout check
+  const rateCheck = checkSignInRateLimit();
+  if(rateCheck.blocked){
+    showAuthError(rateCheck.message);
+    return;
+  }
+  
   const email = document.getElementById('signinEmail').value.trim();
   const password = document.getElementById('signinPassword').value;
   const btn = document.getElementById('signinBtn');
@@ -5386,8 +5515,22 @@ async function handleSignIn(e){
   try{
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if(error) throw error;
+    resetSignInRateLimit();
     document.getElementById('signinForm').reset();
-  }catch(err){ showAuthError(err.message || 'Sign in failed'); }
+  }catch(err){
+    let msg = err.message || 'Sign in failed';
+    const lower = msg.toLowerCase();
+    const lockoutNotice = recordSignInFailure();
+    if(lockoutNotice){
+      msg = lockoutNotice;
+    } else if(lower.includes('rate limit') || lower.includes('too many')){
+      msg = '🔒 Security Rate Limit: Too many attempts detected from this network. Please wait a moment.';
+    } else if(lower.includes('invalid login credentials')){
+      const curState = getAuthRateLimitState();
+      msg = `Invalid email or password (${curState.failedAttempts}/5 attempts before temporary lockout).`;
+    }
+    showAuthError(msg);
+  }
   finally{ btn.disabled = false; btn.textContent = 'Sign In'; }
 }
 async function exitTestModeAndSignIn(){

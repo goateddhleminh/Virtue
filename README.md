@@ -115,27 +115,55 @@ For rapid evaluation and UI testing, the website includes a built-in demo enviro
 
 ---
 
-## 🗄 Optional Supabase Setup
+## 🛡️ Security, Row Level Security (RLS) & Rate Limiting
 
-To sync data across multiple devices, run this SQL in your Supabase SQL Editor:
+### 1. Database Row Level Security (RLS)
+The client communicates directly with Supabase via the standard public/anon key (`sb_publishable_...`). To prevent unauthorized access, Row Level Security is strictly enforced on `studyflow_state`:
+- **RLS Enabled & Forced** on `public.studyflow_state`.
+- **Zero Public Access**: Direct access for the unauthenticated `anon` role is revoked (`REVOKE ALL FROM anon`).
+- **Granular Ownership Policies**: Authenticated users can strictly only SELECT, INSERT, UPDATE, or DELETE rows where `user_id = auth.uid()`.
+- Full setup SQL script: [supabase_rls_setup.sql](file:///d:/Stuffs/Code%20Projects/PROJECTS/Study%20Timer%20App/supabase_rls_setup.sql).
+
+### 2. Client & Server Rate Limiting
+- **Brute Force Login Protection**:
+  - Automatically tracks consecutive failed password attempts.
+  - At 3 failed attempts: imposes a 15-second cooldown.
+  - At 5 failed attempts: enforces a 60-second security lockout.
+- **Sign-Up Spam Prevention**:
+  - Minimum 15-second delay between registration attempts.
+  - Maximum 4 account registrations per hour per browser.
+  - Intercepts Supabase HTTP 429 (`over_email_send_rate_limit`) with friendly, high-contrast security notices.
+- **Supabase Dashboard Recommendations**:
+  - Navigate to **Authentication > Rate Limits** to set IP-based limits (e.g., 10 signups/hr, 30 signins/5min).
+  - Enable **Attack Protection / Leaked Password Protection** under **Authentication > Security**.
+
+---
+
+## 🗄 Supabase Setup & Migration Script
+
+To initialize and secure the backend database, run the bundled script [supabase_rls_setup.sql](file:///d:/Stuffs/Code%20Projects/PROJECTS/Study%20Timer%20App/supabase_rls_setup.sql) in your **Supabase Dashboard > SQL Editor**:
 
 ```sql
-create table if not exists studyflow_state (
-  user_id uuid references auth.users(id) on delete cascade primary key,
-  data jsonb not null default '{}'::jsonb,
-  updated_at timestamptz default now()
+-- 1. Create table
+CREATE TABLE IF NOT EXISTS public.studyflow_state (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
-alter table studyflow_state enable row level security;
+-- 2. Enable & Force Row Level Security (RLS)
+ALTER TABLE public.studyflow_state ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.studyflow_state FORCE ROW LEVEL SECURITY;
 
-create policy "Users read own state"
-  on studyflow_state for select using (auth.uid() = user_id);
-create policy "Users insert own state"
-  on studyflow_state for insert with check (auth.uid() = user_id);
-create policy "Users update own state"
-  on studyflow_state for update using (auth.uid() = user_id);
-create policy "Users delete own state"
-  on studyflow_state for delete using (auth.uid() = user_id);
+-- 3. Granular ownership policies (auth.uid() = user_id)
+CREATE POLICY "Users can read own studyflow_state" ON public.studyflow_state FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own studyflow_state" ON public.studyflow_state FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own studyflow_state" ON public.studyflow_state FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete own studyflow_state" ON public.studyflow_state FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+-- 4. Revoke anonymous permissions
+REVOKE ALL ON public.studyflow_state FROM anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.studyflow_state TO authenticated;
 ```
 
 ---
