@@ -1,173 +1,213 @@
-# ⚡ Virtue — Mastery Through Disciplined Focus
+<div align="center">
 
-A modern, self-contained single-file study tracking and gamified productivity web application. Featuring deep-work focus timers, a comprehensive planner, document & link resources, a dual-section academic and life journal, reward vault, minigames, and cloud synchronization — all contained in a single `index.html` with zero build steps or package dependencies.
+# ⚡ Virtue
+### *Mastery Through Disciplined Focus*
+
+**An offline-first, zero-dependency study workstation engineered with wall-clock drift compensation, gamified progression, and zero-trust Supabase cloud sync.**
+
+[![CI / GitHub Pages](https://img.shields.io/github/actions/workflow/status/goateddhleminh/Virtue/static.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Deployment)](https://goateddhleminh.github.io/Virtue/)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg?style=for-the-badge&color=1E1F1F)](https://github.com/goateddhleminh/Virtue/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge&color=7F7E82)](https://opensource.org/licenses/MIT)
+[![HTML5 / Vanilla](https://img.shields.io/badge/Stack-Pure%20HTML5%20%7C%20CSS3%20%7C%20ES6+-orange.svg?style=for-the-badge&logo=html5&logoColor=white&color=E65100)](https://developer.mozilla.org/)
+[![Supabase RLS](https://img.shields.io/badge/Security-RLS%20Enforced-green.svg?style=for-the-badge&logo=supabase&logoColor=white&color=3ECF8E)](https://supabase.com/)
+
+<br />
+
+<img src="./screenshot_dashboard_v2.png" alt="Virtue Study Station Dashboard" width="85%" style="border-radius: 18px; box-shadow: 0 20px 48px -12px rgba(0,0,0,0.18);" />
+
+<br /><br />
+
+[⚡ Live Demo](https://goateddhleminh.github.io/Virtue/) &nbsp;•&nbsp;
+[📖 Architecture & Docs](#-tech-stack--architecture) &nbsp;•&nbsp;
+[🛡️ Security & RLS](./supabase_rls_setup.sql) &nbsp;•&nbsp;
+[🐛 Report Issue](https://github.com/goateddhleminh/Virtue/issues)
+
+</div>
 
 ---
 
-## 🧭 Navigation & Core Tabs
+## 🌟 Core Features
 
-The dock at the top of the interface provides quick access to 9 dedicated sections:
+- **⏱ Wall-Clock Drift-Free Engine**: Focus and Pomodoro timers leverage millisecond-precise system delta timestamps (`performance.now()` / epoch delta) rather than naive `setInterval`, preventing timer lag when backgrounded, sleeping, or OS-throttled.
+- **🛡️ Zero-Trust Supabase Persistence**: Full state synchronization across desktop and mobile devices via `@supabase/supabase-js`, enforced by rigorous PostgreSQL Row Level Security (`auth.uid() = user_id`) and client/server brute-force rate limiters.
+- **🗂 High-Yield Academic Planner**: Integrated 5-stage Eisenhower To-Do List (*To Do*, *In Progress*, *Later*, *Blocked*, *Done*) and a 7-day Weekly Schedule with automated Monday UTC+7 rollover and stacked XP rewards.
+- **📁 Structured Subject Resource Hub**: Hierarchical folder organization for links, lecture drives, and notes with provider detection (`Google Drive`, `Terabox`, `Notion`, `Dropbox`, `Web Link`) and modal link inspection.
+- **📊 0–10 Exam Journal & Life Logs**: Dual-engine reflective tracking for academic test scores with review sliders, mistake retrospectives, and categorized markdown life notes.
+- **🎮 Gamified Compounding Loops**: 70 unlockable achievements, evolving pet companions with feeding buffs, a multi-denomination Dice Arena, and a 60 FPS HTML5 Canvas Lucky Wheel.
+- **⚡ Instant 1-Click Test Mode**: Sandbox profile with unlocked cosmetics, Level 50 telemetry, and realistic simulated study sessions in `localStorage` without mutating production cloud databases.
 
+---
+
+## 🏗 Tech Stack & Architecture
+
+### Stack Specification
+
+| Domain | Technology | Implementation Details |
+| :--- | :--- | :--- |
+| **Frontend** | HTML5, CSS3, ES6+ | Single-file architecture (`index.html`), zero node dependencies, zero bundlers |
+| **Styling** | Design Tokens / Monochrome | Minimal modern aesthetic, fluid layouts, custom CSS variables, responsive rem scales |
+| **Backend / DB** | Supabase (PostgreSQL 15) | Relational user states stored in JSONB schema (`public.studyflow_state`) |
+| **Security** | PostgreSQL RLS + Policies | Isolated tenant security, `anon` role revoked, strict `auth.uid() = user_id` rules |
+| **Graphics & Audio** | Canvas 2D + Web Audio API | Particle bursts, animated Lucky Wheel spinner, synthesized completion audio chimes |
+| **DevOps / CI** | GitHub Actions | Automated zero-latency deployment to GitHub Pages on every `main` push |
+
+### System Data Flow
+
+```mermaid
+flowchart TD
+    subgraph Client["Virtue Client (Single-File Application)"]
+        UI["Modern UI / Virtue Tokens\n(Dashboard, Planner, Timer, Stats)"]
+        Engine["Wall-Clock Focus Engine\n(Delta Epoch Calculation)"]
+        AuthLimiter["Security Rate Limiter\n(Brute-Force Lockout & Cooldown)"]
+        LocalStore[("Local Cache\n(localStorage)")]
+    end
+
+    subgraph Supabase["Supabase Cloud Platform (szsxenpcyadgfpmwivqb)"]
+        GoTrue["GoTrue Auth Service\n(Sign In / Sign Up Rate Limits)"]
+        Postgres[("PostgreSQL Database\n(studyflow_state)")]
+        RLS{"Row Level Security\nauth.uid() = user_id"}
+    end
+
+    UI --> Engine
+    UI --> AuthLimiter
+    AuthLimiter -->|Credential Verification| GoTrue
+    GoTrue -->|JWT Session Token| UI
+    
+    UI <-->|Auto-Sync State (60s Debounce)| RLS
+    RLS -->|Permitted Reads / Upserts| Postgres
+    UI <-->|Offline Fallback & Test Mode| LocalStore
 ```
-[ Dashboard ]  [ Planner ]  [ Resources ]  [ Journal ]  [ Focus ]  [ Minigames ]  [ Extra ]  [ Stats ]  [ Profile ]
+
+---
+
+## ⚡ Frictionless Quick Start (< 60s Setup)
+
+Virtue runs completely natively in any modern web browser. There is **no build step, no npm install, and no transpilation required**.
+
+### Prerequisites
+
+- Modern Web Browser: Google Chrome >= 110, Mozilla Firefox >= 115, Microsoft Edge >= 110, or Safari >= 16.
+- Optional: A free [Supabase](https://supabase.com/) account if configuring custom backend synchronization.
+
+### 1. Clone & Run Locally
+
+```bash
+# Clone the repository
+git clone https://github.com/goateddhleminh/Virtue.git
+
+# Navigate into the project directory
+cd Virtue
+
+# Launch directly in your default browser (macOS / Linux / Windows)
+open index.html        # macOS
+xdg-open index.html    # Linux
+start index.html       # Windows PowerShell / CMD
 ```
 
-1. **Dashboard** — Daily motivation quotes, active companion stage with feeding & buffs, weekly overview chart, and 13-week study activity heatmap.
-2. **Planner** — Interactive daily To-Do List and 7-day Weekly Schedule with priority tags and milestone completion rewards.
-3. **Resources** — Academic subject folders with link and document management, including a full untruncated subject detail view.
-4. **Journal** — Academic Test History (with 0–10 numeric marks measure and mistake reviews) and personal Life reflections.
-5. **Focus** — Pomodoro/stopwatch focus timer, daily study targets, fullscreen immersive focus overlay, and live XP/coin/token reward counters.
-6. **Minigames** — Consolidated gambling and luck arena featuring the **Dice Arena** and **Lucky Wheel** (with bulk multiplier spins).
-7. **Extra** — Consolidated utility and progression hub featuring the **Reward Shop**, **Break Vault**, and **Trophy Cabinet** (70 achievements).
-8. **Stats** — Long-term analytics including 14-day study duration bars, subject breakdown distribution, and full session history.
-9. **Profile** — Balanced 2-column identity hub featuring avatar customization, cosmetic themes, avatar borders, account sync, and lifetime metrics.
+Or serve via any static HTTP development server:
+
+```bash
+# Using Python 3
+python -m http.server 3000
+
+# Using Node.js npx
+npx serve .
+```
+
+Visit `http://localhost:3000` to interact with the workstation.
+
+### 2. Environment & Config Variables
+
+Because Virtue is a zero-build client app, configuration constants reside at the top of the script tag in `index.html`:
+
+| Variable | Type | Description | Default / Fallback |
+| :--- | :--- | :--- | :--- |
+| `PRESET_SUPABASE_URL` | `String` | Supabase project REST URL | `https://szsxenpcyadgfpmwivqb.supabase.co` |
+| `PRESET_SUPABASE_KEY` | `String` | Supabase Anon/Publishable Key | Public client anon key |
+| `AUTH_RATE_LIMIT_KEY` | `String` | LocalStorage key for rate-limiting | `virtue_auth_rate_limit_v1` |
+| `TIMEZONE_OFFSET` | `Number` | Fixed target timezone for streak rollover | `GMT+7` (Ho Chi Minh City) |
 
 ---
 
-## ✨ Feature Deep Dive
+## 📁 Project Directory Tree
 
-### ⏱ Focus Timer & Study Goals
-- **Drift-Free Wall-Clock Engine** — Uses timestamp delta calculations to guarantee exact, continuous time tracking even when browser tabs are throttled in the background or mobile screens sleep.
-- **Adaptive Timer Modes** — Supports count-up (stopwatch) and countdown (Pomodoro / rest) study sessions with visual circular progress ring.
-- **Daily Target Goal** — Set custom daily targets (e.g., 2h 00m) with automatic progress percentage tracking on both the timer and dashboard.
-- **Fullscreen Immersive Mode** — Distraction-free full-viewport overlay optimized for low compositor overhead on mobile and desktop.
-- **Vietnamese GMT+7 Timeline** — Day roll-overs, streaks, and calendar-based progress consistently compute against the Ho Chi Minh City timezone (GMT+7).
-
-### 🗂 Planner & Milestone Rewards
-- **To-Do List** — Create, prioritize (High, Medium, Low), filter, and manage tasks across 5 distinct states: *To Do*, *In Progress*, *Later*, *Blocked*, and *Done*. Includes 1-click **Clear Completed** archiving.
-- **Weekly Schedule** — 7-day calendar (Monday through Sunday) with automatic Monday rollover, per-day task checklists, and auto-saving free-text notes.
-- **Instant Stacking Rewards**:
-  | Action | Study Coins | Spin Tokens | Focus XP |
-  | :--- | :---: | :---: | :---: |
-  | Complete a To-Do item | +100 🪙 | +1 🎡 | +200 ✦ |
-  | Complete a Weekly Schedule item | +150 🪙 | — | +200 ✦ |
-  | Finish 100% of a day's tasks | — | +2 🎡 | +500 ✦ |
-  | Finish 100% of the entire week | +1,000 🪙 | +5 🎡 | +1,000 ✦ |
-
-### 📁 Study Resources & Cloud Drives
-- **Subject Organization** — Create custom academic subjects (e.g., Mathematics, Computer Science, Physics).
-- **Cloud Links & Drives** — Attach Google Drive files/folders, Terabox links, Notion pages, and study websites with intelligent cloud provider badges (`📂 Google Drive`, `📦 Terabox`, `📝 Notion`, `📦 Dropbox`, `🔗 Web Link`).
-- **Full Subject Detail View** — Click into any subject folder to open an untruncated view displaying complete resource titles, full URLs, 1-click open link `↗`, and copy link `📋` actions.
-
-### 📖 Journal: Test History & Life Notes
-The **Journal** tab consolidates academic performance analysis and personal reflection into two clean sub-sections:
-
-#### 1. 📊 Test History
-- **Subject Organization** — Group past exams, quizzes, and mock tests by subject.
-- **0–10 Mark Measure** — Assign test scores using a dedicated 0.0 to 10.0 numeric measure slider with quick-select pill presets (`5.0`, `7.0`, `8.0`, `9.0`, `10.0`). The test score is displayed prominently next to the title in folder listings.
-- **Mistake & Review Tracking** — Record errors, missed steps, and lessons learned for systematic exam reviews.
-- **Cloud Exam Link** — Connect test papers, online solutions, Google Drive folders, or Terabox scoring rubrics with quick-open pills.
-- **Chronological Sorting** — Tests within each subject are sorted from newest to oldest.
-
-#### 2. 📝 Life & Thoughts
-- **Folder Organization** — Categorize entries into custom folders (e.g., *Reflections*, *Mindset*, *Personal*, *Ideas*).
-- **External Note Links** — Link external Notion pages, Google Docs, or Terabox documents directly to your reflections.
-- **Categorical Tags** — Tag notes with visual markers (🌟 Reflection, 💡 Idea, 🎯 Goal, 🧠 Mindset, 🌿 Personal, ⚡ Productivity).
-- **Search & Reader Modal** — Instant keyword search and distraction-free modal reader with direct external link launcher and delete options.
-
-### 🎲 Minigames
-Consolidates all chance and token entertainment into one tab:
-- **Dice Arena (Gamble)** — Bet Study Coins, Spin Tokens, or Break Minutes on Over (11–17), Under (4–10), Even, Odd, or Any Triple (30x payout). Powered by verifiable client/server seed hashing and nonces.
-- **Lucky Wheel (with Bulk Spins)** — 30 weighted segments awarding break time, coins, consumables (soda, snacks), and rare cosmetics.
-  - **Bulk Multiplier**: Spin with `1×`, `5×`, `10×`, `25×`, `MAX`, or enter any custom spin quantity. Rewards are multiplied directly by the tokens spent in a single roll.
-
-### 🛍 Extra (Utility & Progression Hub)
-Consolidates progression features into three sub-sections:
-- **Reward Shop** — Spend earned Study Coins to adopt companions (Fox, Owl, Deer, Wolf, Penguin, Bear, Tiger, Dragon), purchase XP boosters, unlock themes, and acquire avatar borders.
-- **Break Vault** — Visual "Break Jar" tracking accumulated rest time earned from study sessions and wheel rewards. Includes quick break timer launcher.
-- **Trophy Cabinet (Awards)** — 70 unlockable achievements rewarding bonus coins, tokens, and prestigious titles (e.g., *Centurion*, *Flow Titan*, *Specialist*).
-
-### 👤 Profile & Analytics
-- **Balanced 2-Column Layout** — Left sidebar holds Theme Swatches, Avatar Border selector, and Account cloud management; right column displays the "Your Journey" metrics cards and editable biography.
-- **Customizable Identity** — Choose from 40+ emoji avatars, custom display names, personal motto quotes, and unlockable titles.
-- **Full History & Stats** — 14-day study duration bars, subject time breakdown, and paginated chronological session logs optimized for multi-year usage without DOM lag.
-
-### ⚡ Test Mode (Instant Full Unlock)
-For rapid evaluation and UI testing, the website includes a built-in demo environment:
-- **Instant Unlocks** — Pre-loads Level 50, 50,000 Study Coins, 50 Spin Tokens, all companions, all themes, all borders, mock test histories, and 14 days of realistic study sessions.
-- **Seamless Account Switching** — Prominent "🚪 Switch to Main Account" topbar button and settings control allows toggling back to your personal Supabase account without clearing your local test data.
-- **Independent Storage** — Test data is maintained safely in `localStorage` without impacting cloud data.
+```ascii
+Virtue/
+├── .github/
+│   └── workflows/
+│       └── static.yml           # Automated deployment workflow to GitHub Pages
+├── index.html                   # Core single-file application (UI, Styles, Logic)
+├── supabase_rls_setup.sql       # Production SQL migration: RLS policies & permissions
+├── README.md                    # Project documentation & engineering specifications
+├── .gitignore                   # Version control exclusion rules
+└── screenshot_*.png             # Visual assets & responsive UI verification previews
+```
 
 ---
 
-## 🎨 Themes & Design System
+## 🛡️ Database & Security Architecture
 
-- **Dark Minimal (Default)** — Ultra-clean zinc background (`#09090b`), liquid glass containers with subtle inner highlights, and crisp white typography.
-- **Minimalist White** — High-contrast light theme engineered for legibility, featuring dark slate headers, slate-600 subtext, and high-visibility dark gradient chart bars.
-- **Cyberpunk, Forest, and Arcade** — Alternative accent themes unlocked through progression.
+The app uses standard public client keys with **Row Level Security (RLS)** strictly enforcing zero tenant data leakage.
 
----
-
-## 🛠 Tech Stack
-
-- **Zero Build Tools** — Pure HTML5, CSS3, and modern ES6+ JavaScript in a single self-contained `index.html`.
-- **Supabase Cloud Sync** — Optional cloud persistence with multi-device conflict detection, 60s session auto-sync, and automatic token refresh.
-- **Canvas API** — Smooth 60 FPS animation for the Lucky Wheel.
-- **Web Audio API** — Synthesized audio chimes for session completion and minigame rolls.
-
----
-
-## 🚀 Getting Started
-
-1. Download or clone this repository.
-2. Double-click `index.html` to open it in any modern browser (Chrome, Edge, Firefox, Safari, Zen).
-3. Click **⚡ Test Account** to instantly explore all unlocked features, or sign in with your email to start your cloud-synced study journey.
-
----
-
-## 🛡️ Security, Row Level Security (RLS) & Rate Limiting
-
-### 1. Database Row Level Security (RLS)
-The client communicates directly with Supabase via the standard public/anon key (`sb_publishable_...`). To prevent unauthorized access, Row Level Security is strictly enforced on `studyflow_state`:
-- **RLS Enabled & Forced** on `public.studyflow_state`.
-- **Zero Public Access**: Direct access for the unauthenticated `anon` role is revoked (`REVOKE ALL FROM anon`).
-- **Granular Ownership Policies**: Authenticated users can strictly only SELECT, INSERT, UPDATE, or DELETE rows where `user_id = auth.uid()`.
-- Full setup SQL script: [supabase_rls_setup.sql](file:///d:/Stuffs/Code%20Projects/PROJECTS/Study%20Timer%20App/supabase_rls_setup.sql).
-
-### 2. Client & Server Rate Limiting
-- **Brute Force Login Protection**:
-  - Automatically tracks consecutive failed password attempts.
-  - At 3 failed attempts: imposes a 15-second cooldown.
-  - At 5 failed attempts: enforces a 60-second security lockout.
-- **Sign-Up Spam Prevention**:
-  - Minimum 15-second delay between registration attempts.
-  - Maximum 4 account registrations per hour per browser.
-  - Intercepts Supabase HTTP 429 (`over_email_send_rate_limit`) with friendly, high-contrast security notices.
-- **Supabase Dashboard Recommendations**:
-  - Navigate to **Authentication > Rate Limits** to set IP-based limits (e.g., 10 signups/hr, 30 signins/5min).
-  - Enable **Attack Protection / Leaked Password Protection** under **Authentication > Security**.
-
----
-
-## 🗄 Supabase Setup & Migration Script
-
-To initialize and secure the backend database, run the bundled script [supabase_rls_setup.sql](file:///d:/Stuffs/Code%20Projects/PROJECTS/Study%20Timer%20App/supabase_rls_setup.sql) in your **Supabase Dashboard > SQL Editor**:
+To instantiate the schema on your own Supabase instance, execute [`supabase_rls_setup.sql`](./supabase_rls_setup.sql) in the Supabase SQL Editor:
 
 ```sql
--- 1. Create table
+-- 1. Create Tenant Table
 CREATE TABLE IF NOT EXISTS public.studyflow_state (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   data JSONB NOT NULL DEFAULT '{}'::jsonb,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
--- 2. Enable & Force Row Level Security (RLS)
+-- 2. Enable & Enforce RLS
 ALTER TABLE public.studyflow_state ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.studyflow_state FORCE ROW LEVEL SECURITY;
 
--- 3. Granular ownership policies (auth.uid() = user_id)
-CREATE POLICY "Users can read own studyflow_state" ON public.studyflow_state FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own studyflow_state" ON public.studyflow_state FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own studyflow_state" ON public.studyflow_state FOR UPDATE TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can delete own studyflow_state" ON public.studyflow_state FOR DELETE TO authenticated USING (auth.uid() = user_id);
+-- 3. Strict Isolated Tenant Policies
+CREATE POLICY "Users can read own studyflow_state" 
+ON public.studyflow_state FOR SELECT TO authenticated 
+USING (auth.uid() = user_id);
 
--- 4. Revoke anonymous permissions
+CREATE POLICY "Users can insert own studyflow_state" 
+ON public.studyflow_state FOR INSERT TO authenticated 
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own studyflow_state" 
+ON public.studyflow_state FOR UPDATE TO authenticated 
+USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- 4. Strip Anonymous Access
 REVOKE ALL ON public.studyflow_state FROM anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.studyflow_state TO authenticated;
 ```
 
 ---
 
-## 📄 License
+## 🗺️ Roadmap & Milestones
 
-MIT — free to use, modify, and share.
+- [x] **v1.0**: Core stopwatch & Pomodoro timer engines with persistent local storage.
+- [x] **v2.0**: Academic resource hub, exam mark slider (0–10 scale), and life journal.
+- [x] **v2.2**: Supabase multi-device synchronization with optimistic UI updating.
+- [x] **v2.3**: Virtue minimal monochrome design system with responsive cards and clean typography.
+- [x] **v2.4**: Client/server security hardening: PostgreSQL RLS policies & brute-force rate limiters.
+- [ ] **v2.5**: WebRTC peer-to-peer virtual study rooms & ambient binaural beats audio generator.
+- [ ] **v2.6**: Bi-directional export/import for Anki flashcard decks and Notion databases.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these standards:
+
+1. **Fork** the repository and create your branch: `git checkout -b feature/amazing-feature`.
+2. **Adhere to Zero-Build Philosophy**: Keep all styles, markup, and scripts clean, accessible, and self-contained within `index.html`.
+3. **Commit Your Changes**: Follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `refactor:`).
+4. **Push & Open a Pull Request**: Submit your PR targeting `main`.
+
+---
+
+## 📄 License & Attribution
+
+Distributed under the **MIT License**. See `LICENSE` or [opensource.org/licenses/MIT](https://opensource.org/licenses/MIT) for terms of use.
+
+Designed and engineered with care by [@goateddhleminh](https://github.com/goateddhleminh).
