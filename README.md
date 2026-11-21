@@ -56,26 +56,27 @@
 ```mermaid
 flowchart TD
     subgraph Client["Virtue Client (Single-File Application)"]
-        UI["Modern UI / Virtue Tokens\n(Dashboard, Planner, Timer, Stats)"]
-        Engine["Wall-Clock Focus Engine\n(Delta Epoch Calculation)"]
-        AuthLimiter["Security Rate Limiter\n(Brute-Force Lockout & Cooldown)"]
-        LocalStore[("Local Cache\n(localStorage)")]
+        UI["Modern UI / Design Tokens<br/>Dashboard • Planner • Focus • Stats"]
+        Engine["Wall-Clock Focus Engine<br/>Delta Epoch Calculation"]
+        AuthLimiter["Security Rate Limiter<br/>Brute-Force Lockout and Cooldown"]
+        LocalStore[("Local Cache Storage<br/>Browser localStorage")]
     end
 
-    subgraph Supabase["Supabase Cloud Platform (szsxenpcyadgfpmwivqb)"]
-        GoTrue["GoTrue Auth Service\n(Sign In / Sign Up Rate Limits)"]
-        Postgres[("PostgreSQL Database\n(studyflow_state)")]
-        RLS{"Row Level Security\nauth.uid() = user_id"}
+    subgraph Supabase["Supabase Cloud Platform"]
+        GoTrue["GoTrue Auth Service<br/>Sign-In and Sign-Up Rate Limits"]
+        RLS{"Row Level Security<br/>auth.uid = user_id"}
+        Postgres[("PostgreSQL Database<br/>Table: studyflow_state")]
     end
 
     UI --> Engine
     UI --> AuthLimiter
     AuthLimiter -->|Credential Verification| GoTrue
     GoTrue -->|JWT Session Token| UI
-    
-    UI <-->|Auto-Sync State (60s Debounce)| RLS
-    RLS -->|Permitted Reads / Upserts| Postgres
-    UI <-->|Offline Fallback & Test Mode| LocalStore
+
+    UI -->|60s Debounced State Push| RLS
+    RLS -->|Permitted Reads and Upserts| Postgres
+    Postgres -.->|Hydrate State on Login| UI
+    UI <-->|Offline Fallback and Test Mode| LocalStore
 ```
 
 ---
