@@ -6716,17 +6716,46 @@ async function pushStateToCloud(){
     const { error } = await supabaseClient.from('studyflow_state').upsert(payload, { onConflict: 'user_id' });
     if(error) throw error;
     lastCloudUpdatedAt = nowIso;
+    saveCloudCache(currentUser.id, state, nowIso);
     setSyncDot('idle');
     updateAccountStatus('Synced ' + new Date().toLocaleTimeString());
   }catch(e){ setSyncDot('error'); updateAccountStatus('Sync failed — will retry'); }
 }
-async function pullStateFromCloud(){
-  if(!currentUser || !supabaseClient) return { ok:false, data:null };
+function withTimeout(promise, ms, fallback){
+  let t;
+  const timeout = new Promise(resolve => { t = setTimeout(() => resolve(fallback), ms); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
+}
+function saveCloudCache(userId, dataObj, updatedAt){
+  if(!userId || !dataObj) return;
   try{
-    const { data, error } = await supabaseClient.from('studyflow_state').select('data, updated_at').eq('user_id', currentUser.id).maybeSingle();
+    localStorage.setItem('studyflow.cloud_cache.' + userId, JSON.stringify({
+      data: dataObj,
+      updated_at: updatedAt || lastCloudUpdatedAt || null,
+      ts: Date.now()
+    }));
+  }catch(e){}
+}
+function loadCloudCache(userId){
+  if(!userId) return null;
+  try{
+    const raw = localStorage.getItem('studyflow.cloud_cache.' + userId);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    return (parsed && parsed.data && typeof parsed.data === 'object') ? parsed : null;
+  }catch(e){ return null; }
+}
+async function pullStateFromCloud(opts){
+  if(!currentUser || !supabaseClient) return { ok:false, data:null };
+  const timeoutMs = (opts && opts.timeoutMs) || 6000;
+  try{
+    const query = supabaseClient.from('studyflow_state').select('data, updated_at').eq('user_id', currentUser.id).maybeSingle();
+    const res = await withTimeout(query, timeoutMs, { data:null, error:{ message:'Request timed out' } });
+    const { data, error } = res || { data:null, error:{ message:'Empty response' } };
     if(error) return { ok:false, error:error.message };
     if(data && data.updated_at) lastCloudUpdatedAt = data.updated_at;
-    return { ok:true, data: data ? data.data : null };
+    if(data && data.data) saveCloudCache(currentUser.id, data.data, data.updated_at);
+    return { ok:true, data: data ? data.data : null, updated_at: data ? data.updated_at : null };
   }catch(e){ return { ok:false, error: e.message }; }
 }
 function saveState(){
@@ -6743,6 +6772,7 @@ function saveState(){
     }, 400);
     return;
   }
+  saveCloudCache(currentUser.id, state, lastCloudUpdatedAt);
   if(!supabaseClient || !stateLoadedFromCloud) return;
   setSyncDot('saving');
   clearTimeout(syncTimer);
@@ -6794,8 +6824,18 @@ window.addEventListener('focus', () => {
 });
 function showAuthGate(){ document.getElementById('authGate').classList.add('open'); }
 function hideAuthGate(){ document.getElementById('authGate').classList.remove('open'); }
-function showLoading(){ document.getElementById('loadingOverlay').classList.add('open'); }
-function hideLoading(){ document.getElementById('loadingOverlay').classList.remove('open'); }
+let _loadingSafetyTimer = null;
+function showLoading(){
+  const el = document.getElementById('loadingOverlay');
+  if(el) el.classList.add('open');
+  clearTimeout(_loadingSafetyTimer);
+  _loadingSafetyTimer = setTimeout(() => { hideLoading(); }, 8000);
+}
+function hideLoading(){
+  clearTimeout(_loadingSafetyTimer);
+  const el = document.getElementById('loadingOverlay');
+  if(el) el.classList.remove('open');
+}
 function showAuthError(msg){
   const el = document.getElementById('authError');
   if(!msg){ el.style.display = 'none'; el.textContent = ''; return; }
@@ -6856,29 +6896,12 @@ function updateAuthUI(){
   if(accEmail) accEmail.textContent = isDemo ? 'tester@memento-mori.dev (Test Mode)' : (currentUser.email || '');
 }
 function updateAccountStatus(txt){ const el = document.getElementById('accountStatus'); if(el) el.textContent = txt; }
-async function onSignedIn(user){
-  if(currentUser && currentUser.id === user.id && stateLoadedFromCloud){ updateAuthUI(); return; }
-  currentUser = user;
-  stateLoadedFromCloud = false;
-  showLoading(); hideAuthGate();
-  const result = await pullStateFromCloud();
-  if(!result.ok){
-    hideLoading(); showAuthGate();
-    showAuthError('Could not load your data. Check connection and try again.');
-    return;
-  }
-  if(result.data){
-    state = normalizeState(result.data);
-  } else {
-    state = normalizeState({});
-    if(user.user_metadata && user.user_metadata.full_name) state.profile.name = user.user_metadata.full_name;
-    stateLoadedFromCloud = true;
-    await pushStateToCloud();
-  }
-  stateLoadedFromCloud = true;
+let _signInInFlight = null;
+let _signInUserId = null;
+function applyLoadedStateUI(syncLabel){
   updateAuthUI();
   hideLoading(); hideAuthGate();
-  updateAccountStatus('Synced to cloud');
+  updateAccountStatus(syncLabel || 'Synced to cloud');
   setSyncDot('idle');
   recoverInProgressSession();
   populateSubjects();
@@ -6889,7 +6912,73 @@ async function onSignedIn(user){
   checkAchievements();
   renderAll();
   initGamble();
-  toast('☁','Signed in', 'Progress loaded from your account');
+}
+async function onSignedIn(user){
+  if(!user) return;
+  if(currentUser && currentUser.id === user.id && stateLoadedFromCloud){ updateAuthUI(); return; }
+  if(_signInInFlight && _signInUserId === user.id) return _signInInFlight;
+  _signInUserId = user.id;
+  _signInInFlight = (async () => {
+    currentUser = user;
+    stateLoadedFromCloud = false;
+    const cached = loadCloudCache(user.id);
+    if(cached && cached.data){
+      state = normalizeState(cached.data);
+      if(cached.updated_at) lastCloudUpdatedAt = cached.updated_at;
+      stateLoadedFromCloud = true;
+      applyLoadedStateUI('Syncing…');
+      // Refresh silently in background without blocking the UI
+      pullStateFromCloud({ timeoutMs: 8000 }).then(result => {
+        if(result && result.ok && result.data){
+          const cachedTs = cached.updated_at ? new Date(cached.updated_at).getTime() : 0;
+          const cloudTs = result.updated_at ? new Date(result.updated_at).getTime() : Date.now();
+          if(!cachedTs || cloudTs > cachedTs + 1000){
+            state = normalizeState(result.data);
+            renderAll();
+            populateSubjects();
+          }
+          updateAccountStatus('Synced to cloud');
+          setSyncDot('idle');
+        } else {
+          updateAccountStatus('Offline cache · will sync');
+          setSyncDot('idle');
+        }
+      }).catch(() => {
+        updateAccountStatus('Offline cache · will sync');
+      });
+      return;
+    }
+
+    showLoading(); hideAuthGate();
+    try{
+      const result = await pullStateFromCloud({ timeoutMs: 6000 });
+      if(!result.ok){
+        hideLoading(); showAuthGate();
+        showAuthError(result.error === 'Request timed out'
+          ? 'Connection timed out. Please check your internet and try again.'
+          : 'Could not load your data. Check connection and try again.');
+        return;
+      }
+      if(result.data){
+        state = normalizeState(result.data);
+      } else {
+        state = normalizeState({});
+        if(user.user_metadata && user.user_metadata.full_name) state.profile.name = user.user_metadata.full_name;
+        stateLoadedFromCloud = true;
+        pushStateToCloud(); // non-blocking
+      }
+      stateLoadedFromCloud = true;
+      saveCloudCache(user.id, state, lastCloudUpdatedAt);
+      applyLoadedStateUI('Synced to cloud');
+      toast('☁','Signed in', 'Progress loaded from your account');
+    }finally{
+      hideLoading();
+    }
+  })().finally(() => {
+    _signInInFlight = null;
+    _signInUserId = null;
+  });
+  return _signInInFlight;
 }
 function recoverInProgressSession(){
   const pending = state.inProgressTimer;
@@ -7388,10 +7477,11 @@ async function bootstrapAuth(){
     } else if(event === 'SIGNED_OUT'){ if(currentUser) onSignedOut(); }
   });
   try{
-    const { data } = await supabaseClient.auth.getSession();
+    const res = await withTimeout(supabaseClient.auth.getSession(), 5000, { data: null });
+    const data = res && res.data;
     if(data && data.session && data.session.user){ await onSignedIn(data.session.user); return; }
   }catch(e){}
-  showAuthGate();
+  if(!currentUser && !_signInInFlight) showAuthGate();
 }
 const VN_TIMEZONE_OFFSET_MS = 7 * 60 * 60 * 1000; // GMT+7 constant offset
 function getVnTimeParts(d){
@@ -9536,15 +9626,17 @@ function normalizeWeeklyActivity(a, idx){
   const st = String(a.startTime || '08:00').trim().slice(0, 5);
   const et = String(a.endTime || '09:00').trim().slice(0, 5);
   const cat = ['study','class','review','exercise','break','routine','personal'].includes(a.category) ? a.category : 'study';
+  const rawId = typeof a.id === 'string' && a.id.trim() ? a.id.trim().slice(0, 64) : ('wact_' + (idx || 0) + '_' + Math.random().toString(36).slice(2, 7));
+  const txt = (v, max) => String(v == null ? '' : v).trim().slice(0, max);
   return {
-    id: cleanId(a.id, 'wact_' + (idx || 0) + '_' + Math.random().toString(36).slice(2, 7)),
+    id: rawId,
     day: d,
     startTime: st,
     endTime: et,
-    title: cleanText(a.title || 'Activity', 120),
+    title: txt(a.title || 'Activity', 120),
     category: cat,
-    subject: cleanText(a.subject || 'General', 40),
-    details: cleanText(a.details || '', 600)
+    subject: txt(a.subject || 'General', 40),
+    details: txt(a.details || '', 600)
   };
 }
 
