@@ -9783,10 +9783,9 @@ function saveWeekNote(dayIdx, value){
 }
 function clearWeekDone(){
   const e = plannerEntries();
-  if(!e.done){ toast('↺', 'Nothing to uncheck', 'No done tasks in the week.'); return; }
+  if(!e.done) return;
   WEEK_DAYS.forEach((n, i) => { if(state.weekPlan[i]) state.weekPlan[i].tasks.forEach(t => { t.done = false; }); });
   saveState(); renderPlanner();
-  toast('↺', 'Week cleared', e.done + ' task' + (e.done === 1 ? '' : 's') + ' unchecked · tasks kept');
 }
 let _noteTimer = null;
 function plannerStaticInit(){
@@ -9825,18 +9824,14 @@ function plannerStaticInit(){
       const a = actBtn.dataset.pAction;
       if(a === 'todo-clear-done'){
         const c = todoCounts();
-        if(!c.done){ toast('↺', 'Nothing to uncheck', 'No tasks are marked done.'); return; }
+        if(!c.done) return;
         (state.todos || []).forEach(td => { if(td.status === 'done'){ td.status = 'todo'; td.completedAt = null; } });
         saveState(); renderPlanner();
-        toast('↺', 'Checkboxes cleared', c.done + ' task' + (c.done === 1 ? '' : 's') + ' back to To Do');
       } else if(a === 'todo-archive-done'){
         const c = todoCounts();
-        if(!c.done){ toast('✓', 'No completed tasks', 'No finished tasks to clear.'); return; }
-        if(confirm('Remove ' + c.done + ' completed task' + (c.done === 1 ? '' : 's') + ' from your to-do list? Your earned rewards and stats are kept.')){
-          state.todos = (state.todos || []).filter(td => td.status !== 'done');
-          saveState(); renderPlanner();
-          toast('🗑', 'Completed tasks cleared', c.done + ' task' + (c.done === 1 ? '' : 's') + ' removed.');
-        }
+        if(!c.done) return;
+        state.todos = (state.todos || []).filter(td => td.status !== 'done');
+        saveState(); renderPlanner();
       } else if(a === 'week-clear-done'){
         clearWeekDone();
       } else if(a === 'focus-res-subject-input'){
@@ -9931,12 +9926,8 @@ function plannerStaticInit(){
     const tdDel = t.closest('[data-todo-del]');
     if(tdDel){
       const id = tdDel.dataset.todoDel;
-      const task = (state.todos || []).filter(x => x.id === id)[0];
-      if(task && confirm('Delete this task?\n\n"' + task.text + '"')){
-        state.todos = state.todos.filter(x => x.id !== id);
-        saveState(); renderPlanner();
-        toast('✕', 'Task deleted', task.text.slice(0, 60));
-      }
+      state.todos = (state.todos || []).filter(x => x.id !== id);
+      saveState(); renderPlanner();
       return;
     }
     const wdTitle = t.closest('[data-week-title]');
