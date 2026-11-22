@@ -76,7 +76,8 @@ flowchart TD
     UI -->|60s Debounced State Push| RLS
     RLS -->|Permitted Reads and Upserts| Postgres
     Postgres -.->|Hydrate State on Login| UI
-    UI <-->|Offline Fallback and Test Mode| LocalStore
+    UI -->|Offline Fallback and Test Mode| LocalStore
+    LocalStore -->|Hydrate Cached State| UI
 ```
 
 ---

@@ -3588,6 +3588,480 @@ textarea::placeholder {
   display: none !important;
 }
 
+
+/* =========================================================
+   CUSTOM AVATAR & HIGH-CONTRAST AVATAR BORDERS
+   ========================================================= */
+
+/* Avatar Image Containers */
+.profile-avatar-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  line-height: 1;
+  box-shadow: 0 0 0 2.5px #FFFFFF;
+}
+
+.profile-avatar-img,
+.chip-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+/* Edit Profile Avatar Customization Area */
+.avatar-custom-panel {
+  background: #F8F7FA;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.avatar-preview-flex {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.avatar-preview-large {
+  width: 68px !important;
+  height: 68px !important;
+  font-size: 34px !important;
+  flex-shrink: 0;
+}
+
+.avatar-preview-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-preview-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E1F1F;
+  margin-bottom: 3px;
+}
+
+.avatar-preview-desc {
+  font-size: 11.5px;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+.avatar-controls-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avatar-upload-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.avatar-file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #1E1F1F;
+  color: #FFFFFF;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(30, 31, 31, 0.15);
+}
+
+.avatar-file-upload-btn:hover {
+  background: #000000;
+  transform: translateY(-1px);
+}
+
+.avatar-remove-btn {
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  background: #FEE2E2;
+  color: #B91C1C;
+  border: 1px solid #FCA5A5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.avatar-remove-btn:hover {
+  background: #FCA5A5;
+  color: #7F1D1D;
+}
+
+.avatar-url-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.avatar-url-field {
+  flex: 1;
+  font-size: 12.5px;
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #1E1F1F !important;
+}
+
+.avatar-url-field:focus {
+  border-color: #1E1F1F !important;
+  box-shadow: 0 0 0 2px rgba(30, 31, 31, 0.1) !important;
+}
+
+.avatar-apply-url-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: #1E1F1F;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.avatar-apply-url-btn:hover {
+  background: #000000;
+}
+
+.avatar-picker-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 10px;
+}
+
+.avatar-picker-divider::before,
+.avatar-picker-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.avatar-picker-divider span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6B7280;
+}
+
+/* Base Ring for Profile Avatar */
+.profile-avatar-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+/* 1. DEFAULT: Classic solid high-contrast contour with inner gap */
+.profile-avatar-ring.ring-default {
+  border: 3.5px solid #1E1F1F !important;
+  box-shadow: 0 0 0 2.5px #FFFFFF, 0 4px 14px rgba(30, 31, 31, 0.22) !important;
+}
+
+/* 2. MINIMAL: Architectural blueprint dashed ring with high precision */
+.profile-avatar-ring.ring-minimal {
+  border: 3px dashed #64748B !important;
+  box-shadow: 0 0 0 2.5px #FFFFFF, 0 3px 12px rgba(100, 116, 139, 0.25) !important;
+}
+
+/* 3. GLOW: Electric Cyan luminous halo with deep pulse */
+.profile-avatar-ring.ring-glow {
+  border: 3.5px solid #06B6D4 !important;
+  box-shadow: 0 0 0 2.5px #FFFFFF, 0 0 20px #06B6D4, 0 0 40px rgba(6, 182, 212, 0.7) !important;
+  animation: borderGlowPulse 2.4s ease-in-out infinite alternate !important;
+}
+
+/* 4. GOLD: Luxurious radiant imperial gold with metallic gradient & warm amber glow */
+.profile-avatar-ring.ring-gold {
+  border: 4.5px solid transparent !important;
+  background: conic-gradient(from 180deg, #F59E0B, #FEF08A, #D97706, #FDE68A, #B45309, #F59E0B) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.75)) !important;
+}
+
+/* 5. SILVER: Polished platinum chrome mirror with high-specular gleam */
+.profile-avatar-ring.ring-silver {
+  border: 4.5px solid transparent !important;
+  background: conic-gradient(from 45deg, #475569, #F8FAFC, #334155, #FFFFFF, #64748B, #F1F5F9, #475569) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  filter: drop-shadow(0 0 10px rgba(148, 163, 184, 0.85)) !important;
+}
+
+/* 6. NEON: Cyberpunk radioactive Emerald Green high-voltage laser */
+.profile-avatar-ring.ring-neon {
+  border: 3.5px solid #10B981 !important;
+  box-shadow: 0 0 0 2.5px #FFFFFF, 0 0 22px #10B981, 0 0 45px rgba(16, 185, 129, 0.7) !important;
+  animation: borderNeonPulse 2s ease-in-out infinite alternate !important;
+}
+
+/* 7. RAINBOW: Continuous 360° rotating multi-color chromatic spectrum */
+.profile-avatar-ring.ring-rainbow {
+  inset: -10px !important;
+  border: 5px solid transparent !important;
+  background: conic-gradient(from 0deg, #EF4444, #F59E0B, #10B981, #06B6D4, #8B5CF6, #EC4899, #EF4444) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.7)) !important;
+  animation: borderRainbowSpin 3.5s linear infinite !important;
+}
+
+/* 8. DOUBLE: Dual high-contrast orbital concentric circles */
+.profile-avatar-ring.ring-double {
+  inset: -12px !important;
+  border: 3px solid #1E1F1F !important;
+  box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 6px #1E1F1F, 0 6px 22px rgba(0, 0, 0, 0.18) !important;
+}
+
+@keyframes borderGlowPulse {
+  0% { box-shadow: 0 0 0 2.5px #FFFFFF, 0 0 12px #06B6D4, 0 0 24px rgba(6, 182, 212, 0.4); }
+  100% { box-shadow: 0 0 0 2.5px #FFFFFF, 0 0 26px #06B6D4, 0 0 50px rgba(6, 182, 212, 0.8), inset 0 0 12px rgba(6, 182, 212, 0.5); }
+}
+
+@keyframes borderNeonPulse {
+  0% { box-shadow: 0 0 0 2.5px #FFFFFF, 0 0 14px #10B981, 0 0 28px rgba(16, 185, 129, 0.4); }
+  100% { box-shadow: 0 0 0 2.5px #FFFFFF, 0 0 28px #10B981, 0 0 52px rgba(16, 185, 129, 0.8), inset 0 0 12px rgba(16, 185, 129, 0.5); }
+}
+
+@keyframes borderRainbowSpin {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Topbar User Chip border synchronization */
+.user-chip.circular-avatar-btn.ring-default {
+  border: 2px solid #1E1F1F !important;
+}
+.user-chip.circular-avatar-btn.ring-minimal {
+  border: 2px dashed #64748B !important;
+}
+.user-chip.circular-avatar-btn.ring-glow {
+  border-color: #06B6D4 !important;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.75) !important;
+}
+.user-chip.circular-avatar-btn.ring-gold {
+  border-color: #F59E0B !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.75) !important;
+}
+.user-chip.circular-avatar-btn.ring-silver {
+  border-color: #94A3B8 !important;
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.7) !important;
+}
+.user-chip.circular-avatar-btn.ring-neon {
+  border-color: #10B981 !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.75) !important;
+}
+.user-chip.circular-avatar-btn.ring-rainbow {
+  border-color: #8B5CF6 !important;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.65), 0 0 10px rgba(6, 182, 212, 0.65) !important;
+}
+.user-chip.circular-avatar-btn.ring-double {
+  border: 2px solid #1E1F1F !important;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #1E1F1F !important;
+}
+
+/* Interactive Border Selector Grid in Profile */
+.border-picker {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 10px !important;
+}
+
+.border-card-item {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px !important;
+  padding: 12px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  text-align: center !important;
+}
+
+.border-card-item:hover:not(.locked) {
+  transform: translateY(-2px) !important;
+  border-color: rgba(30, 31, 31, 0.3) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+.border-card-item.active {
+  border-color: #1E1F1F !important;
+  background: #F9F9FB !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.border-card-item.locked {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.bci-preview-wrap {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 4px 0 2px;
+}
+
+.bci-preview-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #1E1F1F;
+  color: #FFFFFF;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.bci-preview-ring {
+  position: absolute;
+  inset: 0px;
+  border-radius: 50%;
+}
+
+.bci-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1E1F1F;
+}
+
+.bci-desc {
+  font-size: 10.5px;
+  color: #6B7280;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.bci-status {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #F4F4F6;
+  color: #4B5563;
+  margin-top: 4px;
+}
+
+.border-card-item.active .bci-status {
+  background: #1E1F1F;
+  color: #FFFFFF;
+}
+
+/* Shop item border icon enhancements */
+.shop-item .shop-icon.shop-icon-border {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+  background: #1E1F1F;
+  color: #FFFFFF;
+}
+.shop-item .shop-icon.shop-icon-border .profile-avatar-ring {
+  inset: -6px;
+}
+
+
+/* Border Card Preview Rings */
+.bci-preview-ring.ring-default {
+  border: 2.5px solid #1E1F1F !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF, 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+}
+
+.bci-preview-ring.ring-minimal {
+  border: 2px dashed #64748B !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF, 0 1px 4px rgba(100, 116, 139, 0.2) !important;
+}
+
+.bci-preview-ring.ring-glow {
+  border: 2.5px solid #06B6D4 !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF, 0 0 10px #06B6D4, 0 0 18px rgba(6, 182, 212, 0.7) !important;
+  animation: borderGlowPulse 2.4s ease-in-out infinite alternate !important;
+}
+
+.bci-preview-ring.ring-gold {
+  border: 3px solid transparent !important;
+  background: conic-gradient(from 180deg, #F59E0B, #FEF08A, #D97706, #FDE68A, #B45309, #F59E0B) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF !important;
+}
+
+.bci-preview-ring.ring-silver {
+  border: 3px solid transparent !important;
+  background: conic-gradient(from 45deg, #475569, #F8FAFC, #334155, #FFFFFF, #64748B, #F1F5F9, #475569) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF !important;
+}
+
+.bci-preview-ring.ring-neon {
+  border: 2.5px solid #10B981 !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF, 0 0 12px #10B981, 0 0 22px rgba(16, 185, 129, 0.6) !important;
+  animation: borderNeonPulse 2s ease-in-out infinite alternate !important;
+}
+
+.bci-preview-ring.ring-rainbow {
+  border: 3.5px solid transparent !important;
+  background: conic-gradient(from 0deg, #EF4444, #F59E0B, #10B981, #06B6D4, #8B5CF6, #EC4899, #EF4444) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  box-shadow: 0 0 0 1.5px #FFFFFF !important;
+  animation: borderRainbowSpin 3.5s linear infinite !important;
+}
+
+.bci-preview-ring.ring-double {
+  inset: 2px !important;
+  border: 2px solid #1E1F1F !important;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #1E1F1F !important;
+}
+
 </style>
 </head>
 <body>
@@ -4407,7 +4881,7 @@ textarea::placeholder {
       <div class="profile-hero" id="profileHero">
         <div class="profile-avatar">
           <div class="profile-avatar-ring" id="profileAvatarRing"></div>
-          <span id="profileAvatarDisplay">◉</span>
+          <div id="profileAvatarDisplay" class="profile-avatar-inner">◉</div>
         </div>
         <div class="profile-info">
           <div class="profile-name" id="profileNameDisplay">Scholar</div>
@@ -4430,8 +4904,42 @@ textarea::placeholder {
               <button type="button" class="btn primary" id="saveEditProfileBtn" style="flex:1;justify-content:center">Save Changes</button>
             </div>
           </div>
-          <div class="card">
-            <h3 class="card-title"><span class="dot"></span>Choose Avatar</h3>
+          <div class="card" id="avatarEditCard">
+            <h3 class="card-title"><span class="dot"></span>Avatar & Profile Picture</h3>
+            
+            <div class="avatar-custom-panel">
+              <div class="avatar-preview-flex">
+                <div class="profile-avatar avatar-preview-large">
+                  <div class="profile-avatar-ring" id="editAvatarPreviewRing"></div>
+                  <div id="editAvatarPreviewDisplay" class="profile-avatar-inner">◉</div>
+                </div>
+                <div class="avatar-preview-info">
+                  <div class="avatar-preview-title">Avatar Preview</div>
+                  <div class="avatar-preview-desc">Upload your photo or paste an image link below.</div>
+                </div>
+              </div>
+
+              <div class="avatar-controls-grid">
+                <div class="avatar-upload-row">
+                  <label for="avatarFileInput" class="avatar-file-upload-btn">
+                    <span>📷 Upload Picture</span>
+                    <input type="file" id="avatarFileInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none">
+                  </label>
+                  <button type="button" class="avatar-remove-btn" id="removeAvatarImgBtn" style="display:none">
+                    ✕ Remove Picture
+                  </button>
+                </div>
+                <div class="avatar-url-input-wrap">
+                  <input type="url" id="avatarUrlInput" placeholder="Or paste image URL (https://...)" class="avatar-url-field">
+                  <button type="button" class="avatar-apply-url-btn" id="applyAvatarUrlBtn">Apply URL</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="avatar-picker-divider">
+              <span>Or Select Emoji / Symbol</span>
+            </div>
+
             <div class="avatar-picker" id="avatarPicker"></div>
           </div>
         </div>
@@ -4927,7 +5435,7 @@ const DEFAULTS = {
   ownedCompanions: ['orb'],
   gambleHistory: [],
   gambleStats: { wins:0, losses:0, wageredCoins:0, wageredTokens:0, wageredBreak:0, netCoins:0, netTokens:0, netBreak:0 },
-  profile: { name:'Scholar', bio:'', quote:'The only way to do great work is to love what you do.', avatar:'◉' },
+  profile: { name:'Scholar', bio:'', quote:'The only way to do great work is to love what you do.', avatar:'◉', avatarImage:'' },
   settings:{focus:25, short:5, long:15, dailyGoal:120, sound:true, notify:false},
   inProgressTimer: { elapsed: 0, sessionXp: 0, sessionCoins: 0, subject: 'General', startedAt: null },
   gambleClientSeed: '',
@@ -5298,15 +5806,44 @@ function updateAuthUI(){
   if(setExitBtn) setExitBtn.style.display = isDemo ? 'block' : 'none';
   const profExitBtn = document.getElementById('profileExitDemoBtn');
   if(profExitBtn) profExitBtn.style.display = isDemo ? 'inline-flex' : 'none';
+  
+  const chipAv = document.getElementById('userChipAvatar');
+  const accAv = document.getElementById('accountAvatar');
+  const userChip = document.getElementById('userChip');
+  const p = state.profile || DEFAULTS.profile;
+  const initials = isDemo ? '👑' : ((p.name || (currentUser && currentUser.email) || 'U').trim().charAt(0).toUpperCase());
+  
+  if(chipAv){
+    if(p.avatarImage && p.avatarImage.trim()){
+      chipAv.innerHTML = '<img src="' + escapeHtml(p.avatarImage) + '" class="chip-avatar-img" alt="Avatar">';
+    } else {
+      chipAv.textContent = isDemo ? '👑' : (p.avatar || initials || '◉');
+    }
+  }
+  if(accAv){
+    if(p.avatarImage && p.avatarImage.trim()){
+      accAv.innerHTML = '<img src="' + escapeHtml(p.avatarImage) + '" class="chip-avatar-img" alt="Avatar">';
+    } else {
+      accAv.textContent = isDemo ? '👑' : (p.avatar || initials || '◉');
+    }
+  }
+  
+  // Synchronize equipped border to top-right user chip
+  if(userChip){
+    userChip.className = userChip.className.replace(/\bring-\w+\b/g, '').trim();
+    const border = state.profileBorder || 'default';
+    userChip.classList.add('ring-' + border);
+  }
+  
+  const emailEl = document.getElementById('userChipEmail');
   if(!currentUser){
-    document.getElementById('userChipEmail').textContent = 'Sign In';
+    if(emailEl) emailEl.textContent = 'Sign In';
     return;
   }
-  const initials = isDemo ? '👑' : ((state.profile?.name || currentUser.email || 'U').trim().charAt(0).toUpperCase());
-  document.getElementById('userChipAvatar').textContent = initials || '◉';
-  document.getElementById('userChipEmail').textContent = isDemo ? 'Test Account (Unlocked)' : (currentUser.email || 'Signed in');
-  document.getElementById('accountEmail').textContent = isDemo ? 'tester@memento-mori.dev (Test Mode)' : (currentUser.email || '');
-  document.getElementById('accountAvatar').textContent = initials || '◉';
+  
+  if(emailEl) emailEl.textContent = isDemo ? 'Test Account (Unlocked)' : (currentUser.email || 'Signed in');
+  const accEmail = document.getElementById('accountEmail');
+  if(accEmail) accEmail.textContent = isDemo ? 'tester@memento-mori.dev (Test Mode)' : (currentUser.email || '');
 }
 function updateAccountStatus(txt){ const el = document.getElementById('accountStatus'); if(el) el.textContent = txt; }
 async function onSignedIn(user){
@@ -7364,7 +7901,10 @@ function renderShop(){
         else if(owned){ cls='owned'; own='Owned'; btnHtml='<button type="button" class="btn soft shop-btn" data-equip-pborder="'+item.value+'">Equip</button>'; }
         else { const canAfford = state.coins >= item.price; btnHtml='<button type="button" class="btn accent shop-btn" data-buy="'+item.id+'" '+(canAfford?'':'disabled')+'>Buy</button>'; }
       }
-      return '<div class="shop-item '+cls+'"><div class="shop-icon">'+item.icon+'</div><div class="shop-name">'+item.name+'</div><div class="shop-desc">'+item.desc+'</div><div class="shop-footer"><div><span class="shop-price"><span class="ico">🪙</span>'+item.price+'</span> '+(own?'<span class="shop-own">· '+own+'</span>':'')+'</div>'+btnHtml+'</div></div>';
+      const iconHtml = item.type === 'profile_border'
+        ? '<div class="shop-icon shop-icon-border"><div class="profile-avatar-ring ring-' + item.value + '"></div><span>' + item.icon + '</span></div>'
+        : '<div class="shop-icon">' + item.icon + '</div>';
+      return '<div class="shop-item '+cls+'">' + iconHtml + '<div class="shop-name">'+item.name+'</div><div class="shop-desc">'+item.desc+'</div><div class="shop-footer"><div><span class="shop-price"><span class="ico">🪙</span>'+item.price+'</span> '+(own?'<span class="shop-own">· '+own+'</span>':'')+'</div>'+btnHtml+'</div></div>';
     }).join('');
     pGrid.querySelectorAll('[data-buy]').forEach(btn => btn.addEventListener('click', () => buyItem(btn.dataset.buy)));
     pGrid.querySelectorAll('[data-equip-ptheme]').forEach(btn => btn.addEventListener('click', () => { state.profileTheme = btn.dataset.equipPtheme; saveState(); renderProfile(); renderShop(); toast('◈','Profile theme equipped',''); }));
@@ -7437,18 +7977,29 @@ const PROFILE_THEMES = {
   mono:     { name: 'Mono',     swatch: 'linear-gradient(135deg, #ffffff, #000000)' }
 };
 const PROFILE_BORDERS = {
-  default:  { name: 'Default',  desc: 'Classic ring' },
-  minimal:  { name: 'Minimal',  desc: 'Thin gray ring' },
-  glow:     { name: 'Glow',     desc: 'Bright white halo' },
-  gold:     { name: 'Gold',     desc: 'Luxury gold' },
-  silver:   { name: 'Silver',   desc: 'Polished silver' },
-  neon:     { name: 'Neon',     desc: 'Accent-colored glow' },
-  rainbow:  { name: 'Rainbow',  desc: 'Animated rainbow' },
-  double:   { name: 'Double',   desc: 'Layered double ring' }
+  default:  { name: 'Default',  desc: 'Classic black contour', icon: '◉' },
+  minimal:  { name: 'Minimal',  desc: 'Blueprint dashed ring', icon: '╌' },
+  glow:     { name: 'Glow',     desc: 'Electric cyan halo', icon: '✦' },
+  gold:     { name: 'Gold',     desc: 'Imperial gold sheen', icon: '◆' },
+  silver:   { name: 'Silver',   desc: 'Polished chrome mirror', icon: '◇' },
+  neon:     { name: 'Neon',     desc: 'Cyber laser emerald', icon: '✺' },
+  rainbow:  { name: 'Rainbow',  desc: '360° chromatic spin', icon: '🌈' },
+  double:   { name: 'Double',   desc: 'Concentric orbital rings', icon: '◎' }
 };
+
+let tempAvatarImage = '';
+let tempAvatarEmoji = '◉';
+
 function renderProfile(){
   const p = state.profile || DEFAULTS.profile;
-  document.getElementById('profileAvatarDisplay').textContent = p.avatar || '◉';
+  const avatarDisplay = document.getElementById('profileAvatarDisplay');
+  if(avatarDisplay){
+    if(p.avatarImage && p.avatarImage.trim()){
+      avatarDisplay.innerHTML = '<img src="' + escapeHtml(p.avatarImage) + '" class="profile-avatar-img" alt="Avatar" onerror="this.style.display=\'none\'; this.parentElement.textContent=\'' + escapeHtml(p.avatar || '◉') + '\';">';
+    } else {
+      avatarDisplay.textContent = p.avatar || '◉';
+    }
+  }
   document.getElementById('profileNameDisplay').textContent = p.name || 'Scholar';
   const info = levelInfo(state.xp);
   const titleTxt = state.currentTitle ? state.currentTitle : levelName(info.level);
@@ -7463,18 +8014,27 @@ function renderProfile(){
   document.getElementById('profileHours').textContent = (totalH>=10?Math.round(totalH):totalH.toFixed(1))+'h';
   document.getElementById('profileSessions').textContent = state.sessions.length;
   document.getElementById('profileAch').textContent = Object.keys(state.achievements).length + '/' + ACHIEVEMENTS.length;
+  
   const picker = document.getElementById('avatarPicker');
-  picker.innerHTML = AVATAR_OPTIONS.map(a => '<button type="button" class="avatar-option '+(a===p.avatar?'selected':'')+'" data-av="'+a+'">'+a+'</button>').join('');
-  picker.querySelectorAll('[data-av]').forEach(btn => btn.addEventListener('click', () => { state.profile.avatar = btn.dataset.av; saveState(); renderProfile(); updateAuthUI(); toast('✓','Avatar updated',''); }));
+  picker.innerHTML = AVATAR_OPTIONS.map(a => '<button type="button" class="avatar-option '+(a===(p.avatarImage ? tempAvatarEmoji : p.avatar)?'selected':'')+'" data-av="'+a+'">'+a+'</button>').join('');
+  picker.querySelectorAll('[data-av]').forEach(btn => btn.addEventListener('click', () => {
+    tempAvatarEmoji = btn.dataset.av;
+    tempAvatarImage = '';
+    const urlField = document.getElementById('avatarUrlInput');
+    if(urlField) urlField.value = '';
+    updateEditorAvatarPreview();
+    picker.querySelectorAll('.avatar-option').forEach(b => b.classList.toggle('selected', b.dataset.av === tempAvatarEmoji));
+    toast('✓','Avatar symbol chosen','Click "Save Changes" to apply.');
+  }));
+  
   const hero = document.getElementById('profileHero');
   if(hero) hero.setAttribute('data-ptheme', state.profileTheme || 'default');
+  
   const ring = document.getElementById('profileAvatarRing');
   if(ring){
-    ring.className = 'profile-avatar-ring';
-    if(state.profileBorder && state.profileBorder !== 'default'){
-      ring.classList.add('ring-' + state.profileBorder);
-    }
+    ring.className = 'profile-avatar-ring ring-' + (state.profileBorder || 'default');
   }
+  
   const themePicker = document.getElementById('profileThemePicker');
   if(themePicker){
     themePicker.innerHTML = Object.entries(PROFILE_THEMES).map(([key, t]) => {
@@ -7497,16 +8057,26 @@ function renderProfile(){
       });
     });
   }
+  
   const borderPicker = document.getElementById('profileBorderPicker');
   if(borderPicker){
     const allBorders = Object.keys(PROFILE_BORDERS);
     borderPicker.innerHTML = allBorders.map(key => {
       const owned = (state.ownedProfileBorders || ['default']).includes(key);
       const active = state.profileBorder === key;
-      const label = PROFILE_BORDERS[key].name;
-      const cls = active ? 'border-chip active' : (owned ? 'border-chip owned' : 'border-chip locked');
-      return '<button type="button" class="' + cls + '" data-pborder="' + key + '">' + label + (active ? ' ✓' : '') + '</button>';
+      const bInfo = PROFILE_BORDERS[key];
+      const cls = active ? 'border-card-item active' : (owned ? 'border-card-item owned' : 'border-card-item locked');
+      return '<button type="button" class="' + cls + '" data-pborder="' + key + '" title="' + escapeHtml(bInfo.name) + ' — ' + escapeHtml(bInfo.desc) + '">' +
+        '<div class="bci-preview-wrap">' +
+          '<div class="bci-preview-ring ring-' + key + '"></div>' +
+          '<div class="bci-preview-dot">' + (bInfo.icon || '◉') + '</div>' +
+        '</div>' +
+        '<span class="bci-name">' + escapeHtml(bInfo.name) + '</span>' +
+        '<span class="bci-desc">' + escapeHtml(bInfo.desc) + '</span>' +
+        '<span class="bci-status">' + (active ? 'Equipped ✓' : (owned ? 'Equip' : '🔒 Locked')) + '</span>' +
+      '</button>';
     }).join('');
+    
     borderPicker.querySelectorAll('[data-pborder]').forEach(btn => {
       btn.addEventListener('click', () => {
         const key = btn.dataset.pborder;
@@ -7517,29 +8087,144 @@ function renderProfile(){
         state.profileBorder = key;
         saveState();
         renderProfile();
-        toast('✦','Border applied', PROFILE_BORDERS[key].name);
+        updateAuthUI();
+        toast('✦','Border equipped', PROFILE_BORDERS[key].name);
       });
     });
   }
 }
+
+function updateEditorAvatarPreview(){
+  const prevDisp = document.getElementById('editAvatarPreviewDisplay');
+  const prevRing = document.getElementById('editAvatarPreviewRing');
+  const removeBtn = document.getElementById('removeAvatarImgBtn');
+  
+  if(prevRing){
+    prevRing.className = 'profile-avatar-ring ring-' + (state.profileBorder || 'default');
+  }
+  
+  if(prevDisp){
+    if(tempAvatarImage && tempAvatarImage.trim()){
+      prevDisp.innerHTML = '<img src="' + escapeHtml(tempAvatarImage) + '" class="profile-avatar-img" alt="Avatar" onerror="this.style.display=\'none\'; this.parentElement.textContent=\'' + escapeHtml(tempAvatarEmoji || '◉') + '\';">';
+    } else {
+      prevDisp.textContent = tempAvatarEmoji || '◉';
+    }
+  }
+  
+  if(removeBtn){
+    removeBtn.style.display = (tempAvatarImage && tempAvatarImage.trim()) ? 'inline-flex' : 'none';
+  }
+}
+
+function processAvatarFile(file){
+  if(!file || !file.type.startsWith('image/')) return;
+  if(file.size > 15 * 1024 * 1024){
+    toast('⚠', 'File too large', 'Please choose an image under 15MB.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxDim = 320;
+      let w = img.width, h = img.height;
+      const minSide = Math.min(w, h);
+      const sx = (w - minSide) / 2;
+      const sy = (h - minSide) / 2;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = maxDim;
+      canvas.height = maxDim;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, maxDim, maxDim);
+      
+      tempAvatarImage = canvas.toDataURL('image/jpeg', 0.88);
+      const urlField = document.getElementById('avatarUrlInput');
+      if(urlField) urlField.value = '';
+      updateEditorAvatarPreview();
+      toast('📷', 'Picture loaded', 'Click "Save Changes" to apply.');
+    };
+    img.onerror = () => {
+      toast('⚠', 'Invalid image', 'Could not parse image file.');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyAvatarUrl(){
+  const urlField = document.getElementById('avatarUrlInput');
+  if(!urlField) return;
+  const val = urlField.value.trim();
+  if(!val){
+    toast('⚠', 'Enter URL', 'Please paste an image web link.');
+    return;
+  }
+  if(!val.startsWith('http://') && !val.startsWith('https://') && !val.startsWith('data:image/')){
+    toast('⚠', 'Invalid link', 'URL must start with http:// or https://');
+    return;
+  }
+  const testImg = new Image();
+  testImg.onload = () => {
+    tempAvatarImage = val;
+    updateEditorAvatarPreview();
+    toast('✓', 'Image URL verified', 'Click "Save Changes" to apply.');
+  };
+  testImg.onerror = () => {
+    toast('⚠', 'Cannot load image', 'Check the URL or direct link permissions.');
+  };
+  testImg.src = val;
+}
+
+function removeAvatarImage(){
+  tempAvatarImage = '';
+  const urlField = document.getElementById('avatarUrlInput');
+  if(urlField) urlField.value = '';
+  const fileInput = document.getElementById('avatarFileInput');
+  if(fileInput) fileInput.value = '';
+  updateEditorAvatarPreview();
+  toast('✓', 'Picture removed', 'Reverted to symbol avatar.');
+}
+
 function openProfileEditor(){
   const p = state.profile || DEFAULTS.profile;
   document.getElementById('profileNameInput').value = p.name || '';
   document.getElementById('profileQuoteInput').value = p.quote || '';
   document.getElementById('profileBioInput').value = p.bio || '';
+  
+  tempAvatarImage = p.avatarImage || '';
+  tempAvatarEmoji = p.avatar || '◉';
+  
+  const urlField = document.getElementById('avatarUrlInput');
+  if(urlField) urlField.value = (tempAvatarImage && tempAvatarImage.startsWith('http')) ? tempAvatarImage : '';
+  
+  updateEditorAvatarPreview();
+  
   document.getElementById('profileEditFields').classList.add('editing');
   document.getElementById('openEditProfileBtn').style.display = 'none';
   setTimeout(()=>document.getElementById('profileNameInput').focus(), 80);
 }
+
 function closeProfileEditor(){
   document.getElementById('profileEditFields').classList.remove('editing');
   document.getElementById('openEditProfileBtn').style.display = 'inline-flex';
 }
+
 function saveProfileEditor(){
+  const urlField = document.getElementById('avatarUrlInput');
+  if(urlField && urlField.value.trim()){
+    tempAvatarImage = urlField.value.trim();
+  }
   state.profile.name = document.getElementById('profileNameInput').value.trim().slice(0,30) || 'Scholar';
   state.profile.quote = document.getElementById('profileQuoteInput').value.trim().slice(0,140);
   state.profile.bio = document.getElementById('profileBioInput').value.trim().slice(0,500);
-  saveState(); renderProfile(); updateAuthUI(); closeProfileEditor();
+  state.profile.avatarImage = tempAvatarImage || '';
+  state.profile.avatar = tempAvatarEmoji || state.profile.avatar || '◉';
+  saveState();
+  renderProfile();
+  updateAuthUI();
+  closeProfileEditor();
+  if(currentUser && !currentUser.isDemo) pushStateToCloud();
   toast('✓','Profile saved','Synced to your account');
 }
 function updateGoalDisplayFromState(){
@@ -9142,6 +9827,12 @@ document.getElementById('petFeedBtn').addEventListener('click',()=>{
 document.getElementById('openEditProfileBtn').addEventListener('click', openProfileEditor);
 document.getElementById('cancelEditProfileBtn').addEventListener('click', closeProfileEditor);
 document.getElementById('saveEditProfileBtn').addEventListener('click', saveProfileEditor);
+document.getElementById('avatarFileInput')?.addEventListener('change', (e) => {
+  const file = e.target.files && e.target.files[0];
+  if(file) processAvatarFile(file);
+});
+document.getElementById('applyAvatarUrlBtn')?.addEventListener('click', applyAvatarUrl);
+document.getElementById('removeAvatarImgBtn')?.addEventListener('click', removeAvatarImage);
 const backdrop = document.getElementById('modalBackdrop');
 document.getElementById('settingsBtn').addEventListener('click',()=>{
   document.getElementById('setSound').checked = !!state.settings.sound;
